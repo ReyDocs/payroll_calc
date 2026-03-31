@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Philippine Government Employee Salary Deductions Calculator — compute GSIS, Pag-IBIG, PhilHealth, and income tax under the TRAIN Law."
+    />
+    <title>Payroll Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Skip nav for screen readers -->
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <!-- ── HEADER ── -->
+    <header>
+      <div class="header-inner">
+        <div class="flag-strip" aria-hidden="true">
+          <span class="f-blue"></span>
+          <span class="f-red"></span>
+          <span class="f-gold"></span>
+        </div>
+        <h1>Payroll<br /><span>Calculator</span></h1>
+      </div>
+    </header>
+
+    <!-- ── MAIN ── -->
+    <main id="main-content">
+      <!-- Input Form -->
+      <section class="form-card" aria-label="Salary Input">
+        <label for="salary">Monthly Basic Salary</label>
+        <div class="input-row">
+          <div class="peso-wrap">
+            <input
+              type="number"
+              id="salary"
+              placeholder="e.g. 35000"
+              min="1"
+              step="0.01"
+              aria-describedby="salary-hint error"
+              autocomplete="off"
+            />
+          </div>
+          <div class="btn-group">
+            <button
+              class="btn btn-primary"
+              id="compute-btn"
+              type="button"
+              onclick="compute()"
+            >
+              <span class="btn-text">Compute</span>
+              <span class="btn-icon" aria-hidden="true">&#8594;</span>
+            </button>
+            <button
+              class="btn btn-ghost"
+              id="reset-btn"
+              type="button"
+              onclick="resetForm()"
+              aria-label="Reset calculator"
+              title="Reset"
+            >
+              &#8635;
+            </button>
+          </div>
+        </div>
+        <p class="input-hint" id="salary-hint">
+          Press <kbd>Enter</kbd> to compute
+        </p>
+        <div class="error-msg" id="error" role="alert" aria-live="polite">
+          <span aria-hidden="true">&#9888;</span>
+          Please enter a valid positive monthly salary.
+        </div>
+      </section>
+
+      <!-- Summary Chips -->
+      <section class="summary-grid" id="chips" aria-label="Payroll Summary">
+        <div class="chip anim anim-d1">
+          <div class="chip-label">Monthly Take-Home</div>
+          <div class="chip-value" id="chip-takehome">—</div>
+          <div class="chip-sub" id="chip-takehome-pct">&nbsp;</div>
+        </div>
+        <div class="chip accent anim anim-d2">
+          <div class="chip-label">Annual Taxable Income</div>
+          <div class="chip-value" id="chip-ati">—</div>
+          <div class="chip-sub">&nbsp;</div>
+        </div>
+        <div class="chip anim anim-d3">
+          <div class="chip-label">Income Tax Payable</div>
+          <div class="chip-value" id="chip-tax">—</div>
+          <div class="chip-sub" id="chip-tax-rate">Effective rate: —</div>
+        </div>
+        <div class="chip accent anim anim-d4">
+          <div class="chip-label">Annual Take-Home</div>
+          <div class="chip-value" id="chip-annual-takehome">—</div>
+          <div class="chip-sub">&nbsp;</div>
+        </div>
+      </section>
+
+      <!-- Results -->
+      <div id="results" aria-live="polite">
+        <!-- ── Monthly Breakdown ── -->
+        <h2 class="section-label anim anim-d1">
+          <span>Monthly Breakdown</span>
+          <span class="section-badge">Per Month</span>
+        </h2>
+        <div class="table-wrap anim anim-d2">
+          <table aria-label="Monthly salary breakdown">
+            <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col" class="text-right">Amount</th>
+                <th scope="col" class="text-right col-pct">% of Salary</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Monthly Salary</td>
+                <td id="r-salary" class="mono text-right"></td>
+                <td class="mono text-right col-pct muted">100%</td>
+              </tr>
+              <tr class="deduction-row">
+                <td>GSIS <small>(9%)</small></td>
+                <td id="r-gsis" class="mono text-right deduction"></td>
+                <td
+                  id="r-gsis-pct"
+                  class="mono text-right col-pct deduction"
+                ></td>
+              </tr>
+              <tr class="deduction-row">
+                <td>Pag-IBIG <small>(2%, max &#8369;100)</small></td>
+                <td id="r-pagibig" class="mono text-right deduction"></td>
+                <td
+                  id="r-pagibig-pct"
+                  class="mono text-right col-pct deduction"
+                ></td>
+              </tr>
+              <tr class="deduction-row">
+                <td>PhilHealth <small>(2.5% of salary base)</small></td>
+                <td id="r-philhealth" class="mono text-right deduction"></td>
+                <td
+                  id="r-philhealth-pct"
+                  class="mono text-right col-pct deduction"
+                ></td>
+              </tr>
+              <tr class="total-row">
+                <td>Total Monthly Deductions</td>
+                <td id="r-totalded" class="mono text-right"></td>
+                <td id="r-totalded-pct" class="mono text-right col-pct"></td>
+              </tr>
+              <tr class="takehome-row">
+                <td>Monthly Take-Home Pay</td>
+                <td id="r-takehome" class="mono text-right"></td>
+                <td id="r-takehome-pct" class="mono text-right col-pct"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Deductions progress bar -->
+        <div class="progress-bar-wrap anim anim-d2">
+          <div class="progress-label">
+            <span class="clr-deduct">&#9632; Deductions</span>
+            <span class="clr-takehome">Take-Home &#9632;</span>
+          </div>
+          <div
+            class="progress-track"
+            role="progressbar"
+            aria-label="Deductions vs take-home proportion"
+          >
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+        </div>
+
+        <!-- ── Annual Breakdown ── -->
+        <h2 class="section-label anim anim-d2">
+          <span>Annual Breakdown</span>
+          <span class="section-badge">Per Year</span>
+        </h2>
+        <div class="table-wrap anim anim-d3">
+          <table aria-label="Annual salary breakdown">
+            <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col" class="text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Annual Salary <small>(&times; 12)</small></td>
+                <td id="r-annualsalary" class="mono text-right"></td>
+              </tr>
+              <tr class="deduction-row">
+                <td>Annual GSIS</td>
+                <td id="r-annualgsis" class="mono text-right deduction"></td>
+              </tr>
+              <tr class="deduction-row">
+                <td>Annual Pag-IBIG</td>
+                <td id="r-annualpagibig" class="mono text-right deduction"></td>
+              </tr>
+              <tr class="deduction-row">
+                <td>Annual PhilHealth</td>
+                <td
+                  id="r-annualphilhealth"
+                  class="mono text-right deduction"
+                ></td>
+              </tr>
+              <tr class="total-row">
+                <td>Total Annual Deductions</td>
+                <td id="r-annualtotalded" class="mono text-right"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ── Bonuses ── -->
+        <h2 class="section-label anim anim-d3">
+          <span>Bonuses</span>
+          <span class="section-badge">Bonus</span>
+        </h2>
+        <div class="table-wrap anim anim-d4">
+          <table aria-label="Bonus breakdown">
+            <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col" class="text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>13th Month Pay</td>
+                <td id="r-13th" class="mono text-right"></td>
+              </tr>
+              <tr>
+                <td>Bonus</td>
+                <td id="r-bonus" class="mono text-right"></td>
+              </tr>
+              <tr class="total-row">
+                <td>Total Bonuses</td>
+                <td id="r-totalbonus" class="mono text-right"></td>
+              </tr>
+              <tr class="highlight-row">
+                <td>
+                  Taxable Bonus <small>(excess over &#8369;90,000)</small>
+                </td>
+                <td id="r-taxablebonus" class="mono text-right"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ── Income Tax ── -->
+        <h2 class="section-label anim anim-d4">
+          <span>Income Tax</span>
+          <span class="section-badge">TRAIN Law</span>
+        </h2>
+        <div class="table-wrap anim anim-d5">
+          <table aria-label="Income tax computation">
+            <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col" class="text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Annual Taxable Income</td>
+                <td id="r-ati" class="mono text-right"></td>
+              </tr>
+              <tr>
+                <td>Tax Bracket</td>
+                <td id="r-bracket" class="mono text-right bracket-cell"></td>
+              </tr>
+              <tr class="total-row">
+                <td>Income Tax Payable</td>
+                <td id="r-incometax" class="mono text-right"></td>
+              </tr>
+              <tr>
+                <td>Monthly Income Tax</td>
+                <td id="r-monthly-tax" class="mono text-right"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

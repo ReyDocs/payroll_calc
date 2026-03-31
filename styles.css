@@ -1,0 +1,570 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   PH Gov Payroll Calculator — styles.css
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── DESIGN TOKENS ── */
+:root {
+  /* Brand palette */
+  --navy:         #0d1f3c;
+  --navy-light:   #152a4e;
+  --blue:         #1b4f8a;
+  --sky:          #3b82c4;
+  --ice:          #d9eaf8;
+  --ice-light:    #eef5fc;
+  --gold:         #c9a84c;
+  --gold-lt:      #f0d98a;
+  --white:        #f5f8fc;
+  --text:         #1a2940;
+  --muted:        #6b7f9a;
+  --border:       #c2d6ee;
+  --row-even:     #eaf3fb;
+  --total-bg:     #bbd5ee;
+
+  /* Semantic colours */
+  --deduct-clr:   #c0392b;
+  --deduct-bg:    #fff5f5;
+  --green:        #1a7a4e;
+  --green-light:  #f0faf5;
+  --green-border: #a7dfc4;
+
+  /* Spacing / shape */
+  --radius-sm:    6px;
+  --radius-md:    10px;
+  --radius-lg:    14px;
+
+  /* Shadows */
+  --shadow-sm:    0 1px 4px  rgba(13, 31, 60, .06);
+  --shadow-md:    0 2px 12px rgba(13, 31, 60, .08);
+  --shadow-lg:    0 6px 28px rgba(13, 31, 60, .14);
+
+  /* Motion */
+  --ease:         .2s ease;
+}
+
+/* ── RESET ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── BASE ── */
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--white);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 80px;
+  line-height: 1.5;
+}
+
+/* ── SKIP LINK (accessibility) ── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  background: var(--navy);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  font-size: .85rem;
+  font-weight: 600;
+  text-decoration: none;
+  z-index: 200;
+  transition: top var(--ease);
+}
+.skip-link:focus { top: 0; }
+
+/* ───────────────────────────────────────────────────────────── HEADER ──── */
+header {
+  background: var(--navy);
+  padding: 44px 40px 38px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative background overlay */
+header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 120% at 90% 50%, rgba(59,130,196,.22) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 80%  at 10% 80%, rgba(201,168,76,.07) 0%, transparent 60%),
+    repeating-linear-gradient(
+      135deg,
+      transparent 0px, transparent 28px,
+      rgba(255,255,255,.018) 28px, rgba(255,255,255,.018) 29px
+    );
+  pointer-events: none;
+}
+
+.header-inner {
+  max-width: 680px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+/* Philippine flag accent strip */
+.flag-strip {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+  justify-content: center;
+}
+.flag-strip span {
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+}
+.flag-strip .f-blue  { width: 52px; background: #0038a8; }
+.flag-strip .f-red   { width: 52px; background: #ce1126; }
+.flag-strip .f-gold  { width: 20px; background: var(--gold); }
+
+h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 4.5vw, 2.2rem);
+  color: #fff;
+  line-height: 1.2;
+  letter-spacing: -.01em;
+}
+h1 span { color: var(--gold-lt); }
+
+.subtitle {
+  font-size: .8rem;
+  color: rgba(255,255,255,.48);
+  margin-top: 8px;
+  font-weight: 300;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* ─────────────────────────────────────────────────────────── MAIN LAYOUT ── */
+main {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ───────────────────────────────────────────────────────────── FORM CARD ── */
+.form-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  margin-top: 28px;
+  box-shadow: var(--shadow-md);
+}
+
+.form-card label {
+  display: block;
+  font-size: .76rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Peso symbol prefix */
+.peso-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+}
+.peso-wrap::before {
+  content: '₱';
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'DM Mono', monospace;
+  font-size: 1rem;
+  color: var(--blue);
+  pointer-events: none;
+  z-index: 1;
+}
+
+input[type="number"] {
+  width: 100%;
+  padding: 13px 14px 13px 32px;
+  font-family: 'DM Mono', monospace;
+  font-size: 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--text);
+  transition: border-color var(--ease), box-shadow var(--ease);
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--sky);
+  box-shadow: 0 0 0 3px rgba(59,130,196,.15);
+}
+input[type="number"]:focus-visible {
+  outline: 2px solid var(--sky);
+  outline-offset: 2px;
+}
+
+/* Input hint */
+.input-hint {
+  margin-top: 10px;
+  font-size: .76rem;
+  color: var(--muted);
+}
+
+kbd {
+  display: inline-block;
+  padding: 1px 7px;
+  background: var(--ice);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: .72rem;
+  color: var(--blue);
+}
+
+/* ────────────────────────────────────────────────────────────── BUTTONS ── */
+.btn-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 13px 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .92rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: .02em;
+  transition: background var(--ease), transform .1s, box-shadow var(--ease), color var(--ease), border-color var(--ease);
+  white-space: nowrap;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--sky);
+  outline-offset: 2px;
+}
+
+/* Primary */
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover {
+  background: var(--sky);
+  box-shadow: 0 4px 16px rgba(27,79,138,.3);
+}
+.btn-primary:active { transform: translateY(1px); box-shadow: none; }
+
+.btn-icon { font-size: 1rem; transition: transform var(--ease); }
+.btn-primary:hover .btn-icon { transform: translateX(3px); }
+
+/* Ghost (reset) */
+.btn-ghost {
+  background: var(--ice);
+  color: var(--blue);
+  padding: 13px 16px;
+  font-size: 1.1rem;
+}
+.btn-ghost:hover { background: var(--border); color: var(--navy); }
+
+
+
+/* ─────────────────────────────────────────────────────────────── ERROR ── */
+.error-msg {
+  margin-top: 12px;
+  font-size: .84rem;
+  font-weight: 500;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+.error-msg.visible { display: flex; }
+
+/* ─────────────────────────────────────────────────────── SUMMARY CHIPS ── */
+.summary-grid {
+  display: none; /* shown via .visible class */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+.summary-grid.visible { display: grid; }
+
+.chip {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--ease), box-shadow var(--ease);
+}
+.chip:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+/* Decorative orbs */
+.chip::after {
+  content: '';
+  position: absolute;
+  top: -24px; right: -24px;
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.06);
+  pointer-events: none;
+}
+.chip::before {
+  content: '';
+  position: absolute;
+  bottom: -18px; left: -18px;
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.04);
+  pointer-events: none;
+}
+
+.chip-label {
+  font-size: .69rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 8px;
+  position: relative; z-index: 1;
+}
+.chip-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--gold-lt);
+  line-height: 1;
+  position: relative; z-index: 1;
+}
+.chip-sub {
+  font-size: .67rem;
+  color: rgba(255,255,255,.4);
+  margin-top: 5px;
+  position: relative; z-index: 1;
+  min-height: 1em;
+}
+
+.chip.accent { background: linear-gradient(135deg, var(--blue) 0%, var(--sky) 100%); }
+.chip.accent .chip-value { color: #fff; }
+.chip.accent .chip-sub   { color: rgba(255,255,255,.55); }
+
+/* ─────────────────────────────────────────────────────────── RESULTS ── */
+#results { margin-top: 8px; display: none; }
+#results.visible { display: block; }
+
+/* Section headings */
+.section-label {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  color: var(--navy);
+  margin: 32px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--ice);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.section-badge {
+  font-family: 'DM Sans', sans-serif;
+  font-size: .67rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--blue);
+  background: var(--ice);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────── TABLES ── */
+.table-wrap {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .88rem;
+  background: #fff;
+}
+
+th, td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+th {
+  background: var(--ice);
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+
+tbody tr:last-child td { border-bottom: none; }
+
+tbody tr { transition: background var(--ease); }
+tbody tr:nth-child(even) td { background: var(--row-even); }
+tbody tr:hover td { background: var(--ice-light) !important; }
+
+/* Utility */
+.mono       { font-family: 'DM Mono', monospace; font-size: .85rem; }
+.text-right { text-align: right; }
+.muted      { color: var(--muted); font-size: .8rem; }
+
+/* Deduction rows */
+.deduction { color: var(--deduct-clr) !important; }
+
+/* Total rows */
+.total-row td {
+  background: var(--total-bg) !important;
+  font-weight: 700;
+  color: var(--navy);
+}
+.total-row:hover td { background: #aac8e2 !important; }
+
+/* Take-home row */
+.takehome-row td {
+  background: var(--green-light) !important;
+  font-weight: 700;
+  color: var(--green);
+  border-top: 1px solid var(--green-border);
+}
+.takehome-row:hover td { background: #e3f5ec !important; }
+
+/* Taxable bonus highlight */
+.highlight-row td {
+  background: #fffbeb !important;
+  color: #92400e;
+  font-weight: 600;
+}
+.highlight-row:hover td { background: #fef3c7 !important; }
+
+/* Tax bracket cell */
+.bracket-cell {
+  font-size: .78rem !important;
+  color: var(--blue);
+}
+
+/* Optional % column — hidden on small screens */
+.col-pct { color: var(--muted); font-size: .78rem; }
+
+/* ─────────────────────────────────────────────────── DEDUCTIONS PROGRESS ── */
+.progress-bar-wrap {
+  margin: 12px 0 4px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.clr-deduct   { color: var(--deduct-clr); }
+.clr-takehome { color: var(--green); }
+
+.progress-track {
+  width: 100%;
+  height: 10px;
+  background: var(--green-light);
+  border: 1px solid var(--green-border);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--deduct-clr) 0%, #e05c5c 100%);
+  border-radius: 9999px;
+  transition: width .55s cubic-bezier(.4, 0, .2, 1);
+  width: 0;
+}
+
+
+
+/* ──────────────────────────────────────────────────────────── FOOTNOTE ── */
+footer.footnote {
+  margin-top: 40px;
+  font-size: .75rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.8;
+  padding: 20px;
+  border-top: 1px solid var(--border);
+}
+footer.footnote strong { color: var(--text); }
+
+/* ────────────────────────────────────────────────────────────── ANIMATE ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.anim        { animation: fadeUp .4s ease both; }
+.anim-d1     { animation-delay: .05s; }
+.anim-d2     { animation-delay: .13s; }
+.anim-d3     { animation-delay: .21s; }
+.anim-d4     { animation-delay: .29s; }
+.anim-d5     { animation-delay: .37s; }
+
+
+
+/* ───────────────────────────────────────────────────────── RESPONSIVE ─── */
+@media (max-width: 540px) {
+  header              { padding: 30px 20px 26px; }
+  .form-card          { padding: 22px 18px; }
+  .input-row          { flex-direction: column; align-items: stretch; }
+  .btn-group          { width: 100%; }
+  .btn-primary        { flex: 1; }
+  .summary-grid       { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .chip               { padding: 14px 16px; }
+  .chip-value         { font-size: 1rem; }
+  th, td              { padding: 9px 12px; }
+  .col-pct            { display: none; }
+  .result-actions     { justify-content: stretch; }
+  .result-actions .btn { flex: 1; }
+}
+
+@media (max-width: 360px) {
+  .summary-grid { grid-template-columns: 1fr; }
+}
